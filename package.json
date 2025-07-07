@@ -1,0 +1,18 @@
+{
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "concurrently": "^9.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.1"
+  },
+  "scripts": {
+    "dev": "concurrently \"cd client && npm run start\" \"cd ts-app/src/ && node backend.ts\" "
+  }
+}
