@@ -7,26 +7,52 @@ import { Progress } from '@/components/ui/progess';
 import PcapPacketTable from '@/components/ui/packet-table';
 import { Table } from '@/components/ui/table';
 import PcapUploadPanel from '@/components/ui/pcapuploadpanel';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 export default function Home() {
+  const protocols = ['UDP', 'TCP', 'ARP', 'NDP', 'MLD', 'Other']
+  const IP_versions = ['IPv4', 'IPv6', 'Unknown']
+  const [protocolFilter, setProtocolFilter] = useState("all");
   const[resp, setResp] = useState<string>('');
   const [packets, setPackets] = useState<any[]>([])
+  const [searchQuery, setSearchQuery] = useState("");
+
   const nodeport = "8080"
   const pyport = "5000"
 
-  const nodesubmit = () => {
-  axios.get('http://localhost:' + nodeport).then((data) => {
-    console.log(data)
-    setResp(data.data)
-  })
-  }
 
-  const pysubmit = () => {
-    axios.get('http://localhost:' + pyport).then((data) => {
-    console.log(data)
-    setResp(data.data)
-  })
-  }
+  const filteredPackets = packets.filter(packet => {
+    const proto = packet.protocol.toLowerCase();
+    const query = searchQuery.toLowerCase();
+
+    const matchesProtocol = protocolFilter === "all"
+    ? true
+    : protocolFilter === "other"
+    ? !["udp", "tcp", "ndp", "mld", "arp"].some(p => proto.includes(p))
+    : proto.includes(protocolFilter);
+
+    const matchesSearch = Object.values(packet)
+      .join(" ")
+      .toLowerCase()
+      .includes(query);
+
+    return matchesProtocol && matchesSearch;
+  });
+
+  // const nodesubmit = () => {
+  // axios.get('http://localhost:' + nodeport).then((data) => {
+  //   console.log(data)
+  //   setResp(data.data)
+  // })
+  // }
+
+  // const pysubmit = () => {
+  //   axios.get('http://localhost:' + pyport).then((data) => {
+  //   console.log(data)
+  //   setResp(data.data)
+  // })
+  // }
+
   return (
   <div className={`min-h-screen overflow-hidden flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100 font-sans`}>
     {/* Header */}
@@ -69,40 +95,46 @@ export default function Home() {
                 Network traffic analysis results
               </p>
             </div>
-            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 bg-blue-50 dark:bg-slate-700 px-3 py-1.5 rounded-full border border-blue-200 dark:border-slate-600">
-              <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 1.79 4 4 4h8c2.21 0 4-1.79 4-4V7c0-2.21-1.79-4-4-4H8c-2.21 0-4 1.79-4 4z " />
-              </svg>
-              Ready for analysis
+            <div>
+              <input
+                type="text"
+                placeholder="Search packets..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full max-w-sm px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
+            <div>
+              <p className="text-sm text-slate-600 dark:text-slate-300">
+                Displaying <span className="font-semibold">{filteredPackets.length}</span> packet{filteredPackets.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+            <span className="text-sm text-slate-800 dark:text-slate-800">Filter by Protocol:</span>
+            <Select value={protocolFilter} onValueChange={setProtocolFilter}>
+              <SelectTrigger className="w-[120px] text-slate-800">
+                <SelectValue placeholder="All" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="udp">UDP</SelectItem>
+                <SelectItem value="tcp">TCP</SelectItem>
+                <SelectItem value="ndp">NDP</SelectItem>
+                <SelectItem value="mld">MLD</SelectItem>
+                <SelectItem value="arp">ARP</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+            </div>
+            <div></div>
           </div>
         </div>
         
         <div className="max-h-[calc(100vh-200px)] overflow-y-auto p-4 ">
-          <PcapPacketTable packets={packets} />
+          <PcapPacketTable packets={filteredPackets} searchQuery={searchQuery} />
         </div>
       </div>
     </div>
   </div>
-);
-}
-
-// return (
-//     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-white text-gray-800 font-san ${geistSans.variable}">
-//     {/* Main layout: Upload panel + Table */}
-//     <div className="flex px-6 gap-6 pb-10">
-//       {/* Upload Panel - Left */}
-//       <div className="w-1/4">
-//         <PcapUploadPanel
-//           onPacketsReceived={(packets: any[]) => {
-//             // Handle packets here
-//           }}
-//         />
-//       </div>
-//       {/* Table - Right */}
-//       <div className="w-3/4">
-//         <PcapPacketTable packets={[]} />
-//       </div>
-//     </div>
-//   </div>
-//   );
+  );
+  }
