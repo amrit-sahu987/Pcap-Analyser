@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
 import { useState } from 'react';
+import { Button } from './components/ui/button';
 
 function App() {
   const[resp, setResp] = useState<string>('');
@@ -27,6 +28,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <button onClick={nodesubmit}>Submit</button>
+        <Button>kjgbsdgkjdsb</Button>
         <button onClick={pysubmit}>Submit</button>
       <p>{resp}</p>
       </header>

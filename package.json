@@ -10,9 +10,10 @@
     "concurrently": "^9.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "geist": "^1.4.2",
     "mongoose": "^8.16.1"
   },
   "scripts": {
-    "dev": "concurrently \"cd client && npm run start\" \"cd ts-app/src/ && node backend.ts\" \"cd server && source env/bin/activate && cd env && flask --app server run\""
+    "dev": "concurrently \"cd frontend && npm run dev\" \"cd ts-app/src/ && node backend.ts\" \"cd .. && source env/bin/activate && cd pcap-li/server && flask --app server run\""
   }
 }
