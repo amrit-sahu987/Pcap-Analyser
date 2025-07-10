@@ -5,8 +5,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Toast } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner"
 import { toast } from "sonner"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+
 
 interface PcapUploadPanelProps {
   onPacketsReceived: (packets: any[]) => void
@@ -27,8 +29,8 @@ const PcapUploadPanel: React.FC<PcapUploadPanelProps> = ({ onPacketsReceived }) 
 
   const handleSubmit = async () => {
     if (!file) {
-      toast({ title: "No file selected", description: "Please select a .pcap file." })
-      return
+      toast("No file selected. Please select a .pcap file.")
+      return 
     }
 
     setLoading(true)
@@ -44,11 +46,13 @@ const PcapUploadPanel: React.FC<PcapUploadPanelProps> = ({ onPacketsReceived }) 
 
       if (!res.ok) throw new Error("Upload failed")
 
+      console.log("here 2")
       const data = await res.json()
+      console.log("here 3")
       onPacketsReceived(data)
-      toast({ title: "Upload successful", description: `${data.length} packets received.` })
+      toast("Upload successful. ${data.length} packets received.")
     } catch (err) {
-      toast({ title: "Error", description: "Failed to upload PCAP file." })
+      toast("Error. Failed to upload PCAP file.")
     } finally {
       setLoading(false)
     }

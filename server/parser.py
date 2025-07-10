@@ -117,6 +117,7 @@ def main(inputfile):
                         packet.pretty_print()
                         quit()
             elif packet.eth.type == '0x0806': #arp
+                prot = 'ARP'
                 try:
                     source_address = packet.arp.src_proto_ipv4
                     destination_address = packet.arp.dst_proto_ipv4
@@ -136,3 +137,6 @@ def main(inputfile):
     # with open("packet_data.json", "w") as f:#swap w for a as and when appending
     #     json.dump(data, f, indent=2)
     return data
+
+# if __name__ == '__main__':
+#     main()

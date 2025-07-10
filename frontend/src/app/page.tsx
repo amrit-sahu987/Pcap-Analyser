@@ -10,6 +10,7 @@ import PcapUploadPanel from '@/components/ui/pcapuploadpanel';
 
 export default function Home() {
   const[resp, setResp] = useState<string>('');
+  const [packets, setPackets] = useState<any[]>([])
   const nodeport = "8080"
   const pyport = "5000"
 
@@ -27,7 +28,7 @@ export default function Home() {
   })
   }
   return (
-  <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100 font-sans`}>
+  <div className={`min-h-screen overflow-hidden flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100 font-sans`}>
     {/* Header */}
     <div className="border-b border-slate-700 bg-slate-800/90 backdrop-blur-sm sticky top-0 z-10 shadow-lg">
       <div className="px-6 py-4">
@@ -53,15 +54,13 @@ export default function Home() {
       <div className="w-1/4 bg-gradient-to-b from-slate-800 to-slate-900 border-r-4 border-blue-500/20 shadow-2xl">
         <div className="p-6 h-full">
           <PcapUploadPanel
-            onPacketsReceived={(packets: any[]) => {
-              // Handle packets here
-            }}
+            onPacketsReceived={setPackets}
           />
         </div>
       </div>
 
       {/* Table - Right (3/4 width) */}
-      <div className="flex-1 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 ">
+      <div className="flex-1 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 ">
         <div className="p-6 border-b-2 border-blue-100 dark:border-slate-600 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
           <div className="flex items-center justify-between ">
             <div>
@@ -79,8 +78,8 @@ export default function Home() {
           </div>
         </div>
         
-        <div className="h-[calc(100%-120px)] overflow-hidden ">
-          <PcapPacketTable packets={[]} />
+        <div className="max-h-[calc(100vh-200px)] overflow-y-auto p-4 ">
+          <PcapPacketTable packets={packets} />
         </div>
       </div>
     </div>

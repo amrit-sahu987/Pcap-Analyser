@@ -28,6 +28,7 @@ def upload_pcap():
 
     try:
         packets = parse_pcap(filepath)  # This should return a list of dicts
+        print('here')
         return jsonify(packets)
     except Exception as e:
         return jsonify({'error': str(e)}), 500

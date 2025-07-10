@@ -49,4 +49,7 @@ Thumbs.db
 *.wmv
 
 # Sample PCAP files
-
+/server/sample1.pcap
+/server/sample2.pcap
+/server/sample3.pcap
+/server/uploads/
