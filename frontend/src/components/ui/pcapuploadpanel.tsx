@@ -50,7 +50,7 @@ const PcapUploadPanel: React.FC<PcapUploadPanelProps> = ({ onPacketsReceived }) 
       const data = await res.json()
       console.log("here 3")
       onPacketsReceived(data)
-      toast("Upload successful. ${data.length} packets received.")
+      toast("Upload successful.")
     } catch (err) {
       toast("Error. Failed to upload PCAP file.")
     } finally {

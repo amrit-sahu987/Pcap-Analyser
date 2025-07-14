@@ -7,6 +7,10 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 100
+app.config['UPLOAD_FOLDER'] = 'uploads'
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
 @app.route('/', methods=["GET"])
 def hello():
     return 'Hello, World?'
@@ -20,15 +24,11 @@ def upload_pcap():
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
     
-    UPLOAD_FOLDER = 'uploads'
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     file.save(filepath)
 
     try:
         packets = parse_pcap(filepath)  # This should return a list of dicts
-        print('here')
         return jsonify(packets)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
