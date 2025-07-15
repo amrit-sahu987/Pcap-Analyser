@@ -1,11 +1,14 @@
+import json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 from parser import main as parse_pcap
 from datetime import datetime
+from openai import OpenAI
 
 app = Flask(__name__)
 CORS(app)
+client = OpenAI()
 
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 100
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -29,6 +32,38 @@ def upload_pcap():
 
     try:
         packets = parse_pcap(filepath)  # This should return a list of dicts
+
+        response = client.responses.create(
+            model="gpt-4.1",
+            input=[
+                {
+                    "role": "developer",
+                    "content": [
+                        {
+                            "type": "input_text",
+                            "text": "Answer concisely, within a few sentences. Ignore the fact that some packets have a question mark as the destination, this is normal."
+                        }
+                    ]
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        { 
+                            "type": "input_text", 
+                            "text": "Can you detect any anomalies in this pcap packet metadata? " + str(packets)
+                        }
+                    ]
+                } 
+            ]
+        )
+        #packets.append(json.loads(response))
+        #print(response.output_text)
+        return jsonify({
+            "message": response.output_text,
+            "data": packets
+        })
+        obj = json.loads("message")
         return jsonify(packets)
+    
     except Exception as e:
         return jsonify({'error': str(e)}), 500

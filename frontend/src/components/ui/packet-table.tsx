@@ -20,7 +20,8 @@ interface PcapPacketTableProps {
   searchQuery: string;
 }
 
-function highlightMatch(text: string, query: string) {
+function highlightMatch(text: string | null | undefined, query: string) {
+  if (!text) return null;
   if (!query) return text;
 
   const regex = new RegExp(`(${query})`, "gi"); // case-insensitive match

@@ -156,7 +156,7 @@ def parse(packet):
             print("ip type???")
             pct['IP_version'] = packet.eth.type
     except:
-        print('malformed packet: ' + packet.eth._ws_expert_message)
+        #print('malformed packet: ' + packet.eth._ws_expert_message)
         pct['destination'] = packet.eth._ws_expert_message
     
     try:

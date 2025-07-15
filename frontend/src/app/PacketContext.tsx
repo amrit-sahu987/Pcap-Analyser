@@ -8,9 +8,10 @@ export const usePacketData = () => useContext(PacketContext);
 
 export const PacketProvider = ({ children }) => {
   const [packets, setPackets] = useState<any[]>([]);
+  const [message, setMessage] = useState<string>("");
 
   return (
-    <PacketContext.Provider value={{ packets, setPackets }}>
+    <PacketContext.Provider value={{ packets, setPackets, message, setMessage }}>
       {children}
     </PacketContext.Provider>
   );

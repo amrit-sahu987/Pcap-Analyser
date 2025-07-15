@@ -23,16 +23,15 @@ export default function Home() {
   const nodeport = "8080"
   const pyport = "5000"
 
-  const { packets, setPackets } = usePacketData();
+  const { packets, setPackets, message, setMessage } = usePacketData();
 
   const handlePackets = (data: any) => {
-    setPackets(data);
+    setPackets(data.data);
+    setMessage(data.message);
     router.push("/analytics");
   };
 
-
-
-  const filteredPackets = packets.filter(packet => {
+  const filteredPackets = (packets ?? []).filter(packet => {
     const proto = packet.protocol ? packet.protocol.toLowerCase() : 'unknown';
     const query = searchQuery.toLowerCase();
 
@@ -80,8 +79,9 @@ export default function Home() {
       <div className="w-1/4 bg-gradient-to-b from-slate-800 to-slate-900 border-r-4 border-blue-500/20 shadow-2xl">
         <div className="p-6 h-full">
           <PcapUploadPanel
-            onPacketsReceived={setPackets}
-          />
+              onPacketsReceived={handlePackets} onMessageReceived={function (msg: string): void {
+                throw new Error('Function not implemented.');
+              } }          />
         </div>
       </div>
 

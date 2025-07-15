@@ -8,16 +8,19 @@ import { Label } from "@/components/ui/label"
 import { Toaster } from "@/components/ui/sonner"
 import { toast } from "sonner"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { usePacketData } from "@/app/PacketContext"
 
 
 interface PcapUploadPanelProps {
-  onPacketsReceived: (packets: any[]) => void
+  onPacketsReceived: (packets: any[]) => void;
+  onMessageReceived: (msg: string) => void;
 }
 
 const PcapUploadPanel: React.FC<PcapUploadPanelProps> = ({ onPacketsReceived }) => {
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { packets, setPackets, message, setMessage } = usePacketData();
 
   const handleChooseFile = () => {
     fileInputRef.current?.click()
@@ -76,7 +79,6 @@ const PcapUploadPanel: React.FC<PcapUploadPanelProps> = ({ onPacketsReceived }) 
             <input
               ref={fileInputRef}
               type="file"
-              accept=".pcap"
               onChange={handleFileChange}
               className="hidden"
             />
