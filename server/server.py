@@ -5,7 +5,10 @@ import os
 from parser import main as parse_pcap
 from datetime import datetime
 from openai import OpenAI
+from dotenv import load_dotenv
 
+#api_key = os.environ.get("API_KEY")
+load_dotenv()
 app = Flask(__name__)
 CORS(app)
 client = OpenAI()
@@ -32,38 +35,39 @@ def upload_pcap():
 
     try:
         packets = parse_pcap(filepath)  # This should return a list of dicts
-
-        response = client.responses.create(
-            model="gpt-4.1",
-            input=[
-                {
-                    "role": "developer",
-                    "content": [
-                        {
-                            "type": "input_text",
-                            "text": "Answer concisely, within a few sentences. Ignore the fact that some packets have a question mark as the destination, this is normal."
-                        }
-                    ]
-                },
-                {
-                    "role": "user",
-                    "content": [
-                        { 
-                            "type": "input_text", 
-                            "text": "Can you detect any anomalies in this pcap packet metadata? " + str(packets)
-                        }
-                    ]
-                } 
-            ]
-        )
-        #packets.append(json.loads(response))
-        #print(response.output_text)
+        message = 'hello'
+        try:
+            # response = client.responses.create(
+            #     model="gpt-4.1",
+            #     input=[
+            #         {
+            #             "role": "developer",
+            #             "content": [
+            #                 {
+            #                     "type": "input_text",
+            #                     "text": "Answer concisely, within a few sentences. Ignore the fact that some packets have a question mark as the destination, this is normal."
+            #                 }
+            #             ]
+            #         },
+            #         {
+            #             "role": "user",
+            #             "content": [
+            #                 { 
+            #                     "type": "input_text", 
+            #                     "text": "Can you detect any anomalies in this pcap packet metadata? " + str(packets)
+            #                 }
+            #             ]
+            #         } 
+            #     ]
+            # )
+            # message = response.output_text
+            pass
+        except:
+            message = 'gpt broken'
         return jsonify({
-            "message": response.output_text,
+            "message": message,
             "data": packets
         })
-        obj = json.loads("message")
-        return jsonify(packets)
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500

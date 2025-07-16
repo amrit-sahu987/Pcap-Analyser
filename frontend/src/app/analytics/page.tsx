@@ -73,8 +73,7 @@ export default function AnalyticsPage() {
             <div className="flex items-center gap-5 px-5 py-5 items-stretch">
                 <Card className="w-[25%] shadow-lg max-h">
                     <CardContent>
-                        {/* <TopIPTable title="Top Destinations" data={topDestDomains} /> */}
-                        <p>{message}</p>
+                        <TopIPTable title="Top Destinations" data={topDestDomains} />
                     </CardContent>
                 </Card>
                 <Card className="w-[25%] shadow-lg max-h">
