@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-import { CloudUpload, ChartNoAxesCombined, SearchCode } from "lucide-react"
+import { CloudUpload, ChartNoAxesCombined, SearchCode, Brain } from "lucide-react"
 import Link from "next/link"
 
 const items = [
@@ -26,8 +26,13 @@ const items = [
         icon: ChartNoAxesCombined,
     }, 
     {
-        title: "ML Detection",
+        title: "ML Analysis",
         url: "/ml",
+        icon: Brain,
+    },
+    {
+        title: "OpenLI",
+        url: "/open-li",
         icon: SearchCode,
     }
 ]

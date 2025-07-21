@@ -2,7 +2,6 @@
 
 import { usePacketData } from "@/app/PacketContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChartAreaInteractive } from "@/components/ui/interactive-area-chart";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function MlPage() {
@@ -24,7 +23,7 @@ export default function MlPage() {
                             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                             PCAP Analyzer
                             </h1>
-                            <p className="text-sm text-slate-400">ML Detection</p>
+                            <p className="text-sm text-slate-400">ML Analysis</p>
                         </div>
                     </div>
                 </div>

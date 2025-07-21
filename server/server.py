@@ -6,6 +6,7 @@ from parser import main as parse_pcap
 from datetime import datetime
 from openai import OpenAI
 from dotenv import load_dotenv
+from openli import deleteIp, endAll, modifyIp, simulateFlow, startAll, configIp
 
 #api_key = os.environ.get("API_KEY")
 load_dotenv()
@@ -37,30 +38,30 @@ def upload_pcap():
         packets = parse_pcap(filepath)  # This should return a list of dicts
         message = 'hello'
         try:
-            # response = client.responses.create(
-            #     model="gpt-4.1",
-            #     input=[
-            #         {
-            #             "role": "developer",
-            #             "content": [
-            #                 {
-            #                     "type": "input_text",
-            #                     "text": "Answer concisely, within a few sentences. Ignore the fact that some packets have a question mark as the destination, this is normal."
-            #                 }
-            #             ]
-            #         },
-            #         {
-            #             "role": "user",
-            #             "content": [
-            #                 { 
-            #                     "type": "input_text", 
-            #                     "text": "Can you detect any anomalies in this pcap packet metadata? " + str(packets)
-            #                 }
-            #             ]
-            #         } 
-            #     ]
-            # )
-            # message = response.output_text
+            response = client.responses.create(
+                model="gpt-4.1",
+                input=[
+                    {
+                        "role": "developer",
+                        "content": [
+                            {
+                                "type": "input_text",
+                                "text": "Answer concisely, within a few sentences. Ignore the fact that some packets have a question mark as the destination, this is normal."
+                            }
+                        ]
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            { 
+                                "type": "input_text", 
+                                "text": "Can you detect any anomalies in this pcap packet metadata? " + str(packets)
+                            }
+                        ]
+                    } 
+                ]
+            )
+            message = response.output_text
             pass
         except:
             message = 'gpt broken'
@@ -71,3 +72,46 @@ def upload_pcap():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+@app.route('/open-li/<method>', methods=["GET"])
+def openLiSim(method):
+    match method:
+        # next to each button have an option to see under the hood, which shows the script executed
+        case "start-all":
+            try:
+                result = startAll()
+                return jsonify(result)
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+        case "config-ip":
+            try:
+                result = configIp()
+                return jsonify(result)
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+        case "modify-ip":
+            try:
+                result = modifyIp()
+                return jsonify(result)
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+        case "delete-ip":
+            try:
+                result = deleteIp()
+                return jsonify(result)
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+        case "sim-flow":
+            try:
+                result = simulateFlow()
+                return jsonify(result)
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+        case "end-all":
+            try:
+                result = endAll()
+                return jsonify(result)
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+
+

@@ -1,7 +1,8 @@
 Flask==3.1.1
 flask_cors==6.0.1
 pyshark==0.6
-python-dotenv
-openai
+python-dotenv==1.1.1
+openai==1.95.1
+docker==28.1.1
 
 
