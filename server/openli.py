@@ -1,6 +1,8 @@
 import docker
 import time
 
+#docker exec -i -t openli-agency /bin/bash
+
 client = docker.from_env()
 coll = client.containers.get("openli-collector")
 med = client.containers.get("openli-mediator")

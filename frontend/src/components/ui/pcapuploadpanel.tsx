@@ -79,6 +79,7 @@ const PcapUploadPanel: React.FC<PcapUploadPanelProps> = ({ onPacketsReceived }) 
             <input
               ref={fileInputRef}
               type="file"
+              accept=".pcap"
               onChange={handleFileChange}
               className="hidden"
             />

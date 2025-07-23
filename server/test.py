@@ -1,4 +1,3 @@
-from openli import *
+import tensorflow as tf
 
-#print(simulateFlow())
-print(startAll())
+print(tf.__version__)

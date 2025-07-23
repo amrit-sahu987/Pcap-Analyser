@@ -50,6 +50,7 @@ Thumbs.db
 
 # Sample PCAP files
 /server/uploads/
+/server/training_data/
 
 # api key
 /server/.env
