@@ -1,0 +1,5 @@
+training set: combined_samples
+scaler: MinMax
+latent dimensions: 2
+normal: 5247
+anomaly: 794

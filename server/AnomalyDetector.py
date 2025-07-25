@@ -25,17 +25,23 @@ class AnomalyDetector(Model):
 
 
         self.encoder = tf.keras.Sequential([
-            layers.Dense(3, activation="relu"), 
-            layers.Dense(2, activation="relu")
+            layers.Dense(64, activation="relu"), 
+            layers.Dropout(0.3),
+            layers.Dense(32, activation="relu"), 
+            layers.Dropout(0.2),
+            layers.Dense(4, activation="relu")
         ])
 
         self.decoder = tf.keras.Sequential([
-            layers.Dense(3, activation="relu"), 
+            layers.Dense(32, activation="relu"), 
+            layers.Dropout(0.3),
+            layers.Dense(64, activation="relu"), 
+            layers.Dropout(0.2),
             layers.Dense(embedding_dim + 3, activation="sigmoid")
         ])
 
-        self.batch_size = 128
-        self.epochs = 20
+        self.batch_size = 64
+        self.epochs = 10
 
     def get_config(self):
         config = super().get_config()
@@ -75,11 +81,12 @@ def predict(model, data):
   return tf.math.less(loss, threshold), loss
 
 def train():
-    (cont_train, proto_train), (cont_test, proto_test) = input('./training_data/bigFlows.csv')
+    (cont_train, proto_train), (cont_test, proto_test) = input('./training_data/combined_samples.csv')
 
     autoencoder = AnomalyDetector(num_proto_categories=14, embedding_dim=2)
 
-    autoencoder.compile(optimizer='adam', loss='mae')
+    optimiser = tf.keras.optimizers.Adam(learning_rate=0.0005, clipnorm=1.0)
+    autoencoder.compile(optimizer=optimiser, loss='mse')
 
     y_train = prepare_targets(cont_train, proto_train, autoencoder.embedding)
     y_test = prepare_targets(cont_test, proto_test, autoencoder.embedding)
@@ -103,15 +110,16 @@ def train():
         pickle.dump(threshold, f)
 
 def main():
-
+    train()
+    return
+    
     model = tf.keras.models.load_model('autoencoder.keras')    
 
-    (trainx, trainy),(testx, testy) = input('./training_data/combined.csv')
+    (trainx, trainy),(testx, testy) = input('./uploads/sample5.csv')
     predictions, loss = predict(model, [trainx, trainy])
 
     reconstructed = model.predict([trainx, trainy])
     # original = prepare_targets(cont_sample, proto_sample, model.embedding).numpy()
-    print(reconstructed[:5])
     print(len(np.unique(reconstructed, axis=0)))
 
     t, f = 0, 0
@@ -122,7 +130,8 @@ def main():
             f += 1
     print("Normal: ", t)
     print("Anomaly: ", f)
-    print(loss[:100])
+    print(np.mean(loss))
+    print(np.std(loss))
 
 if __name__ == '__main__':
     main()
