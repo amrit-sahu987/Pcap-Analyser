@@ -21,7 +21,7 @@ export default function MlPage() {
                         </div> */}
                         <div>
                             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                            PCAP Analyzer
+                            PCAP Analyser
                             </h1>
                             <p className="text-sm text-slate-400">ML Analysis</p>
                         </div>

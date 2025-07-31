@@ -20,7 +20,7 @@ const PcapUploadPanel: React.FC<PcapUploadPanelProps> = ({ onPacketsReceived }) 
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const { packets, setPackets, message, setMessage } = usePacketData();
+  const { packets, setPackets, message, setMessage, filename, setFilename } = usePacketData();
 
   const handleChooseFile = () => {
     fileInputRef.current?.click()
@@ -40,18 +40,18 @@ const PcapUploadPanel: React.FC<PcapUploadPanelProps> = ({ onPacketsReceived }) 
 
     const formData = new FormData()
     formData.append("file", file)
+    setFilename(file.name)
 
     try {
       const res = await fetch("http://localhost:5000/upload", {
         method: "POST",
-        body: formData
+        body: formData,
+        credentials: "include"
       })
 
       if (!res.ok) throw new Error("Upload failed")
 
-      console.log("here 2")
       const data = await res.json()
-      console.log("here 3")
       onPacketsReceived(data)
       toast("Upload successful.")
     } catch (err) {

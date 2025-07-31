@@ -14,6 +14,6 @@
     "mongoose": "^8.16.1"
   },
   "scripts": {
-    "dev": "concurrently \"cd frontend && npm run dev\" \"cd ts-app/src/ && node backend.ts\" \"cd .. && source env/bin/activate && cd pcap-li/server && flask --app server run\""
+    "dev": "concurrently \"cd frontend && npm run dev\" \"cd ts-app/src/ && node backend.ts\" \"cd .. && source env-3.12/bin/activate && cd pcap-li/server && flask --app server run\""
   }
 }

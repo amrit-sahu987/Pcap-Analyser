@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import glob
-from sklearn.preprocessing import LabelEncoder, MinMaxScaler, RobustScaler
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler, RobustScaler, StandardScaler
 from sklearn.model_selection import train_test_split
 import seaborn as sns
 import scipy
@@ -44,7 +44,8 @@ def combine():
     else:
         print("No valid CSV files found to combine.")
 
-def main(inputfile='./training_data/combined_samples.csv'):
+def process(inputfile='./training_data/combined_samples.csv'):
+    print(inputfile)
     df = pd.read_csv(inputfile)
 
     protocols = ['unknown', 'tcp', 'icmp', 'udp', 'arp', 'ipv6', 'ipv6-icmp', 'igmp', 'wlan', 
@@ -68,24 +69,25 @@ def main(inputfile='./training_data/combined_samples.csv'):
     # df['Proto_encoded'] = df['Proto'].map(lambda x: encoder.get(x, encoder['unknown']))
 
     df['Proto'] = df['Proto'].fillna('unknown').apply(lambda x: x if x in protocols else 'unknown')
+
     df_encoded = pd.get_dummies(df, columns=['Proto'], prefix='Proto', prefix_sep='_')
-    for proto in protocols:
-        col = f'Proto_{proto}'
-        if col not in df_encoded.columns:
-            df_encoded[col] = 0
+    expected_cols = {f'Proto_{proto}' for proto in protocols}
+    missing_cols = expected_cols - set(df_encoded.columns)
+    if missing_cols:
+        zeros_df = pd.DataFrame(0, index=df_encoded.index, columns=list(missing_cols))
+        df_encoded = pd.concat([df_encoded, zeros_df], axis=1)
 
-    df.drop(columns=['SrcAddr', 'Sport', 'DstAddr', 'Dport', 'Proto'], inplace=True)
+    df_encoded.drop(columns=['SrcAddr', 'Sport', 'DstAddr', 'Dport'], inplace=True)
 
+    dur = df_encoded['Dur'].to_numpy().reshape(-1,1)
+    df_encoded['Dur'] = StandardScaler().fit_transform(dur)
+
+    totpkts = df_encoded['TotPkts'].to_numpy().reshape(-1,1)
+    df_encoded['TotPkts'] = StandardScaler().fit_transform(totpkts)
+
+    totbytes = df_encoded['TotBytes'].to_numpy().reshape(-1,1)
+    df_encoded['TotBytes'] = StandardScaler().fit_transform(totbytes)
     
-    dur = df['Dur'].to_numpy().reshape(-1,1)
-    df['Dur'] = MinMaxScaler().fit_transform(dur)
-
-    totpkts = df['TotPkts'].to_numpy().reshape(-1,1)
-    df['TotPkts'] = MinMaxScaler().fit_transform(totpkts)
-
-    totbytes = df['TotBytes'].to_numpy().reshape(-1,1)
-    df['TotBytes'] = MinMaxScaler().fit_transform(totbytes)
-
     # continuous_features = df[['Dur', 'TotPkts', 'TotBytes']].to_numpy(dtype='float32')
     # proto_encoded = df['Proto_encoded'].to_numpy(dtype='int32')
 
@@ -95,8 +97,9 @@ def main(inputfile='./training_data/combined_samples.csv'):
 
     # return (cont_train, proto_train), (cont_test, proto_test)
 
-    train, test = train_test_split(df.to_numpy(dtype='float32'), test_size=0.2, random_state=42)
-    return train, test
+    # train, test = train_test_split(df.to_numpy(dtype='float32'), test_size=0.2, random_state=42)
+    # return train, test
+    return df_encoded.to_numpy(dtype='float32')
     
     # x_test, x_val = train_test_split(x_test, test_size=0.5, random_state=42)
     
@@ -124,10 +127,12 @@ def main(inputfile='./training_data/combined_samples.csv'):
     # plt.title('Proto Proportionality')
     # plt.show()
 
+def main(input1, input2):
+    return process(input1), process(input2)
 
 
 if __name__ == '__main__':
-    main('./training_data/combined_samples.csv')
+    main('./training_data/combined_samples.csv', './training_data/combined.csv')
       
     # df = pd.read_csv('./training_data/combined.csv')
     
