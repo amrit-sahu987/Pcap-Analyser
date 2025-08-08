@@ -86,6 +86,7 @@ def main():
             proc.terminate()
 
 if __name__ == '__main__':
+
     # conf()
     command1 = """tracereplay -X 10 
     /home/openli-coll/pcaps/staticip.pcap 

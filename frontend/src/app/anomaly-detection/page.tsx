@@ -14,6 +14,8 @@ export default function AnomalyDetectionPage() {
     const [filteredData, setFilteredData] = useState<Netflow[]>([]);
     const [protocolFilter, setProtocolFilter] = useState<ProtocolOption>("all");
     const [searchQuery, setSearchQuery] = useState("");
+    const [filteredData2, setFilteredData2] = useState<Netflow[]>([]);
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
 
     useEffect(() => {
         fetch(`http://localhost:5000/anomaly-detection?filename=${filename}`, {
@@ -21,16 +23,37 @@ export default function AnomalyDetectionPage() {
             credentials: "include",
         })
         .then((res) => res.json())
-        .then((data: Netflow[]) => {
+        .then((data) => {
             console.log(typeof data)
             console.log(data)
-            setFilteredData(data)
+            setFilteredData(data.autoencode);
+            setFilteredData2(data.cluster);
         })
         .catch((err) => console.error("Failed to fetch netflows:", err));
     }, []);
 
     const filteredPackets = Array.isArray(filteredData) ?
         filteredData.filter((packet) => {
+            const proto = packet.Proto ? packet.Proto.toLowerCase() : 'unknown';
+            const query = searchQuery.toLowerCase();
+
+            const matchesProtocol = protocolFilter === "all"
+            ? true
+            : protocolFilter === "other"
+            ? !["udp", "tcp", "ndp", "mld", "arp"].some(p => proto.includes(p))
+            : proto.includes(protocolFilter);
+
+            const matchesSearch = Object.values(packet)
+            .join(" ")
+            .toLowerCase()
+            .includes(query);
+
+            return matchesProtocol && matchesSearch;
+        })
+        : [];
+    
+    const filteredPackets2 = Array.isArray(filteredData2) ?
+        filteredData2.filter((packet) => {
             const proto = packet.Proto ? packet.Proto.toLowerCase() : 'unknown';
             const query = searchQuery.toLowerCase();
 
@@ -129,6 +152,41 @@ export default function AnomalyDetectionPage() {
                             </div>
                             <div className="max-h-[calc(100vh-200px)] overflow-y-auto p-4 relative z-10">
                                 <NetflowTable flows={filteredPackets} searchQuery={searchQuery}/>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+            <div className="flex justify-center px-5 py-5">
+                <Card className="w-[100%] shadow-lg max-h relative z-10">
+                    <CardContent>
+                        <div className="flex-1 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 ">
+                            <div className="p-6 border-b-2 border-blue-100 dark:border-slate-600 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
+                                <div className="flex items-center justify-between ">
+                                    <div>
+                                    <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-100">Packet View</h2>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                                        Network traffic results
+                                    </p>
+                                    </div>
+                                    <div>
+                                    <input
+                                        type="text"
+                                        placeholder="Search packets..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full max-w-sm px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    </div>
+                                    <div>
+                                    <p className="text-sm text-slate-600 dark:text-slate-300">
+                                        Displaying <span className="font-semibold">{filteredPackets2.length}</span> packet{filteredPackets2.length !== 1 ? 's' : ''}
+                                    </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="max-h-[calc(100vh-200px)] overflow-y-auto p-4 relative z-10">
+                                <NetflowTable flows={filteredPackets2} searchQuery={searchQuery}/>
                             </div>
                         </div>
                     </CardContent>

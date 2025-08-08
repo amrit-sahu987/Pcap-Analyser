@@ -6,8 +6,9 @@ from parser import main as parse_pcap
 from datetime import datetime
 from openai import OpenAI
 from dotenv import load_dotenv
-from openli import deleteIp, endAll, modifyIp, simulateFlow, startAll, configIp
+# from openli import deleteIp, endAll, modifyIp, simulateFlow, startAll, configIp
 from AnomalyDetector import main as detect
+from clustering import main as cluster
 
 #api_key = os.environ.get("API_KEY")
 load_dotenv()
@@ -77,66 +78,67 @@ def upload_pcap():
     
 @app.route('/open-li/<method>', methods=["GET"])
 def openLiSim(method):
-    # match method:
-    #     # next to each button have an option to see under the hood, which shows the script executed
-    #     case "start-all":
-    #         try:
-    #             result = startAll()
-    #             return jsonify(result)
-    #         except Exception as e:
-    #             return jsonify({'error': str(e)}), 500
-    #     case "config-ip":
-    #         try:
-    #             result = configIp()
-    #             return jsonify(result)
-    #         except Exception as e:
-    #             return jsonify({'error': str(e)}), 500
-    #     case "modify-ip":
-    #         try:
-    #             result = modifyIp()
-    #             return jsonify(result)
-    #         except Exception as e:
-    #             return jsonify({'error': str(e)}), 500
-    #     case "delete-ip":
-    #         try:
-    #             result = deleteIp()
-    #             return jsonify(result)
-    #         except Exception as e:
-    #             return jsonify({'error': str(e)}), 500
-    #     case "sim-flow":
-    #         try:
-    #             result = simulateFlow()
-    #             return jsonify(result)
-    #         except Exception as e:
-    #             return jsonify({'error': str(e)}), 500
-    #     case "end-all":
-    #         try:
-    #             result = endAll()
-    #             return jsonify(result)
-    #         except Exception as e:
-    #             return jsonify({'error': str(e)}), 500
-    try:
-        match method:
-            case "start-all":
-                result = startAll()
-                return jsonify(result)
-            case "config-ip":
-                result = configIp()
-                return jsonify(result)
-            case "modify-ip":
-                result = modifyIp()
-                return jsonify(result)
-            case "delete-ip":
-                result = deleteIp()
-                return jsonify(result)
-            case "sim-flow":
-                result = simulateFlow()
-                return jsonify(result)
-            case "end-all":
-                result = endAll()
-                return jsonify(result)
-    except Exception as e:
-                return jsonify({'error': str(e)}), 500
+    return method
+#     # match method:
+#     #     # next to each button have an option to see under the hood, which shows the script executed
+#     #     case "start-all":
+#     #         try:
+#     #             result = startAll()
+#     #             return jsonify(result)
+#     #         except Exception as e:
+#     #             return jsonify({'error': str(e)}), 500
+#     #     case "config-ip":
+#     #         try:
+#     #             result = configIp()
+#     #             return jsonify(result)
+#     #         except Exception as e:
+#     #             return jsonify({'error': str(e)}), 500
+#     #     case "modify-ip":
+#     #         try:
+#     #             result = modifyIp()
+#     #             return jsonify(result)
+#     #         except Exception as e:
+#     #             return jsonify({'error': str(e)}), 500
+#     #     case "delete-ip":
+#     #         try:
+#     #             result = deleteIp()
+#     #             return jsonify(result)
+#     #         except Exception as e:
+#     #             return jsonify({'error': str(e)}), 500
+#     #     case "sim-flow":
+#     #         try:
+#     #             result = simulateFlow()
+#     #             return jsonify(result)
+#     #         except Exception as e:
+#     #             return jsonify({'error': str(e)}), 500
+#     #     case "end-all":
+#     #         try:
+#     #             result = endAll()
+#     #             return jsonify(result)
+#     #         except Exception as e:
+#     #             return jsonify({'error': str(e)}), 500
+#     try:
+#         match method:
+#             case "start-all":
+#                 result = startAll()
+#                 return jsonify(result)
+#             case "config-ip":
+#                 result = configIp()
+#                 return jsonify(result)
+#             case "modify-ip":
+#                 result = modifyIp()
+#                 return jsonify(result)
+#             case "delete-ip":
+#                 result = deleteIp()
+#                 return jsonify(result)
+#             case "sim-flow":
+#                 result = simulateFlow()
+#                 return jsonify(result)
+#             case "end-all":
+#                 result = endAll()
+#                 return jsonify(result)
+#     except Exception as e:
+#                 return jsonify({'error': str(e)}), 500
 
 
 @app.route('/anomaly-detection', methods=["GET"])
@@ -145,10 +147,30 @@ def anomalyDetection():
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     filepath = os.path.join('.', filepath)
     try:
+        print('here')
+        print(filepath)
         temp = detect(filepath)
-        print(type(temp))
-        return jsonify(temp)
+        print('here2')
+        temp2 = cluster(filepath)
+        print('here3')
+        print(type(temp2))
+        return jsonify({
+            'autoencode': temp, 
+            'cluster': temp2,
+        })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# @app.route('/clustering', methods=["GET"])
+# def clustering():
+#     filename = request.args.get('filename')
+#     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+#     filepath = os.path.join('.', filepath)
+#     try:
+#         temp = cluster(filepath)
+#         print(type(temp))
+#         return jsonify(temp)
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
 
 

@@ -151,6 +151,7 @@ def main(inputfile):
     # print(len(np.unique(reconstructed, axis=0)))
 
     df = pd.read_csv(file)
+    df = df.replace('', np.nan).dropna()
     anomalies = []
 
     t, f = 0, 0
@@ -167,7 +168,7 @@ def main(inputfile):
     print("Anomaly: ", f)
 
     dfd = pd.DataFrame(loss)
-    print(dfd.describe())
+    # print(dfd.describe())
 
     return anomalies
 

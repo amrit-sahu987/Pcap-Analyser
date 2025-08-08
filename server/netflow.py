@@ -47,6 +47,7 @@ def combine():
 def process(inputfile='./training_data/combined_samples.csv'):
     print(inputfile)
     df = pd.read_csv(inputfile)
+    df = df.replace('', np.nan).dropna()
 
     protocols = ['unknown', 'tcp', 'icmp', 'udp', 'arp', 'ipv6', 'ipv6-icmp', 'igmp', 'wlan', 
                 'rtp', 'rtcp', 'gre', 'ah', 'mux', 'egp', 'unas', 'sps', 'st2', 'tlsp', 'aris',
