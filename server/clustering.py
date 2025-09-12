@@ -30,15 +30,17 @@ def main(inputfile, dim=2):
 
     df = pd.read_csv(file)
     df = df.replace('', np.nan).dropna()
-    anomalies = []
-    for i in indices:
-        anomalies.append(df.iloc[i].to_dict())
-    return anomalies
+    # anomalies = []
+    # for i in indices:
+    #     anomalies.append(df.iloc[i].to_dict())
+    # return anomalies
 
-
+    anomalies = dist_anomalies(data, kmeans)
     # anomalies = lof_anomalies(data)
     # anomalies = forest_anomalies(data)
-    # new_data, new_centres, new_anomalies = dim_reduction(data, kmeans.cluster_centers_, anomalies, dim)
+    new_data, new_centres, new_anomalies = dim_reduction(data, kmeans.cluster_centers_, anomalies, dim)
+    plot(new_data, new_centres, new_anomalies)
+    return
     return indices#, plot(new_data, new_centres, new_anomalies, dim)
 
 def plot(data, centres, anomalies, dim=2):
@@ -67,12 +69,13 @@ def plot(data, centres, anomalies, dim=2):
         print('weird data dim')
         quit()
 
-    img = BytesIO()
-    plt.savefig(img, format='png')
-    img.seek(0)
-    image_base64 = base64.b64encode(img.read()).decode('utf-8')
-    img.close()
-    # plt.show()
+    # img = BytesIO()
+    # plt.savefig(img, format='png')
+    # img.seek(0)
+    # image_base64 = base64.b64encode(img.read()).decode('utf-8')
+    # img.close()
+    plt.show()
+    return
     return image_base64
 
 def forest_anomalies(data):
@@ -93,6 +96,7 @@ def dist_anomalies(data, model):
     # mask = np.isin(data, anomalies, invert=True)
     # data = data[mask]
     # print(len(anomalies))
+    return anomalies
     return indices
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 def cof_anomalies(data):
@@ -126,6 +130,5 @@ def dim_reduction(data, centres, anomalies, k=2):
     return new_data, new_centres, new_anomalies
 
 if __name__ == '__main__':
-    pass
     # use a pcap file here from now on
-    # main('./training_data/bigFlows.pcap') 
+    main('./training_data/bigFlows.pcap') 
