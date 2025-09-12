@@ -10,6 +10,7 @@ from autoelbow_rupakbob import autoelbow
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.ensemble import IsolationForest
 import pandas as pd
+from sklearn.mixture import GaussianMixture
 
 from netflow import process
 from AnomalyDetector import convert
@@ -23,6 +24,8 @@ def main(inputfile, dim=2):
     print('1')
     k = autoelbow.auto_elbow_search(data)
     print('2')
+    gmm(data)
+    return
     kmeans = KMeans(n_clusters=k)#k = 5 for my training datasets
     kmeans.fit(data)
     print('3')
@@ -42,6 +45,20 @@ def main(inputfile, dim=2):
     plot(new_data, new_centres, new_anomalies)
     return
     return indices#, plot(new_data, new_centres, new_anomalies, dim)
+
+def gmm(data):
+    for n in range(1, 11):
+        gmm = gmm = GaussianMixture(n_components=n, covariance_type='full', random_state=42)
+        gmm.fit(data)
+        likelihoods = -gmm.score_samples(data)
+        threshold = np.percentile(likelihoods, 99)
+        anomalies_indices = np.where(likelihoods < threshold)[0]
+
+        plt.scatter(data[:, 0], data[:, 1], c='b', label='Normal Data')
+        plt.scatter(data[anomalies_indices, 0], data[anomalies_indices, 1], c='r', marker='x', label='Anomalies')
+        plt.legend()
+        plt.title('Anomaly Detection using Gaussian Mixture Model')
+        plt.show()
 
 def plot(data, centres, anomalies, dim=2):
     if dim == 3:
